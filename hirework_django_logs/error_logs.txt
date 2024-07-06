@@ -1,0 +1,831 @@
+2024-06-28 14:28:08,061 - django.request - ERROR - Internal Server Error: /hirework/web/jobs/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+               ^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\response.py", line 74, in rendered_content
+    ret = renderer.render(self.data, accepted_media_type, context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\renderers.py", line 726, in render
+    context = self.get_context(data, accepted_media_type, renderer_context)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\renderers.py", line 657, in get_context
+    raw_data_post_form = self.get_raw_data_form(data, view, 'POST', request)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\renderers.py", line 540, in get_raw_data_form
+    if not self.show_form_for_method(view, method, request, instance):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\renderers.py", line 430, in show_form_for_method
+    view.check_permissions(request)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 332, in check_permissions
+    if not permission.has_permission(request, self):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\permissions.py", line 10, in has_permission
+    if(self.request.user.role):
+       ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\utils\functional.py", line 253, in inner
+    return func(_wrapped, *args)
+           ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'User' object has no attribute 'role'
+2024-06-28 14:28:29,442 - hirework.views - ERROR - Error in SignupView_ from POST method : name field cannot be null
+2024-06-28 14:30:17,002 - hirework.views - ERROR - Error in SignupView_ from POST method : organization_name field cannot be null
+2024-06-28 14:30:26,001 - hirework.views - ERROR - Error in SignupView_ from POST method : 'SECRET_KEY'
+2024-06-28 14:35:57,924 - hirework.views - ERROR - Error in SignupView_ from POST method : PlanPeriodModel matching query does not exist.
+2024-06-28 14:37:55,862 - hirework.views - ERROR - Error in SignupView_ from POST method : PlanPeriodModel matching query does not exist.
+2024-06-28 14:40:57,088 - hirework.views - ERROR - Error in SignupView_ from POST method : organization_name field cannot be null
+2024-06-28 14:41:20,887 - hirework.views - ERROR - Error in SignupView_ from POST method : industry field cannot be null
+2024-06-28 14:41:57,326 - hirework.views - ERROR - Error in SignupView_ from POST method : organization_email field cannot be null
+2024-06-28 14:42:27,216 - hirework.views - ERROR - Error in SignupView_ from POST method : organization_city field cannot be null
+2024-06-28 14:44:34,867 - hirework.views - ERROR - Error in SignupView_ from POST method : UNIQUE constraint failed: hirework_usermodel.email
+2024-06-28 14:46:25,364 - hirework.views - ERROR - Error in SignupView_ from POST method : PlanPeriodModel matching query does not exist.
+2024-06-28 14:48:33,795 - hirework.views - ERROR - Error in SignupView_ from POST method : Cannot assign "7": "CompanyDetailsModel.user" must be a "UserModel" instance.
+2024-06-28 14:49:40,097 - hirework.views - ERROR - Error in SignupView_ from POST method : Cannot assign "'industry'": "CompanyDetailsModel.industry" must be a "IndustriesModel" instance.
+2024-06-28 14:52:40,558 - hirework.views - ERROR - Error in SignupView_ from POST method : Cannot assign "1": "CompanyDetailsModel.industry" must be a "IndustriesModel" instance.
+2024-06-28 14:57:33,143 - hirework.views - ERROR - Error in SignupView_ from POST method : organization_industry field cannot be null
+2024-06-28 15:03:07,514 - hirework.views - ERROR - Error in LoginView_ from POST method : 'dict' object has no attribute 'user'
+2024-06-28 15:04:02,196 - hirework.views - ERROR - Error in LoginView_ from POST method : 'dict' object has no attribute 'user'
+2024-06-28 15:04:30,490 - hirework.views - ERROR - Error in LoginView_ from POST method : No UserModel matches the given query.
+2024-06-28 15:04:58,269 - hirework.views - ERROR - Error in LoginView_ from POST method : No UserModel matches the given query.
+2024-06-28 15:05:59,402 - hirework.views - ERROR - Error in LoginView_ from POST method : 'dict' object has no attribute 'user'
+2024-06-28 15:06:19,132 - hirework.views - ERROR - Error in LoginView_ from POST method : 'dict' object has no attribute 'user'
+2024-06-28 15:06:37,387 - hirework.views - ERROR - Error in LoginView_ from POST method : 'dict' object has no attribute 'user'
+2024-06-28 15:07:17,283 - hirework.views - ERROR - Error in LoginView_ from POST method : No UserModel matches the given query.
+2024-06-28 15:07:54,928 - hirework.views - ERROR - Error in LoginView_ from POST method : 'dict' object has no attribute 'user'
+2024-06-28 15:08:03,506 - hirework.views - ERROR - Error in LoginView_ from POST method : No UserModel matches the given query.
+2024-06-28 15:08:21,369 - hirework.views - ERROR - Error in LoginView_ from POST method : 'dict' object has no attribute 'user'
+2024-06-28 15:08:28,611 - hirework.views - ERROR - Error in LoginView_ from POST method : No UserModel matches the given query.
+2024-06-28 15:09:43,847 - hirework.views - ERROR - Error in LoginView_ from POST method : 'dict' object has no attribute 'user'
+2024-06-28 15:10:04,785 - hirework.views - ERROR - Error in LoginView_ from POST method : 'dict' object has no attribute 'user'
+2024-06-28 15:11:57,349 - hirework.views - ERROR - Error in LoginView_ from POST method : No UserModel matches the given query.
+2024-06-29 10:34:11,910 - hirework.views - ERROR - Error in LoginView_ from POST method : 'str' object has no attribute 'save'
+2024-06-29 10:34:45,624 - hirework.views - ERROR - Error in LoginView_ from POST method : 'str' object has no attribute 'save'
+2024-06-29 10:35:43,375 - hirework.views - ERROR - Error in LoginView_ from POST method : 'str' object has no attribute 'save'
+2024-06-29 10:35:43,552 - django.request - ERROR - Internal Server Error: /hirework/web/login/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+               ^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\response.py", line 74, in rendered_content
+    ret = renderer.render(self.data, accepted_media_type, context)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\renderers.py", line 726, in render
+    context = self.get_context(data, accepted_media_type, renderer_context)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\renderers.py", line 682, in get_context
+    'content': self.get_content(renderer, data, accepted_media_type, renderer_context),
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\renderers.py", line 412, in get_content
+    content = renderer.render(data, accepted_media_type, renderer_context)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\renderers.py", line 99, in render
+    ret = json.dumps(
+          ^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\utils\json.py", line 25, in dumps
+    return json.dumps(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\AppData\Local\Programs\Python\Python311\Lib\json\__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "C:\Users\adith\AppData\Local\Programs\Python\Python311\Lib\json\encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "C:\Users\adith\AppData\Local\Programs\Python\Python311\Lib\json\encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "C:\Users\adith\AppData\Local\Programs\Python\Python311\Lib\json\encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "C:\Users\adith\AppData\Local\Programs\Python\Python311\Lib\json\encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "C:\Users\adith\AppData\Local\Programs\Python\Python311\Lib\json\encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\utils\encoders.py", line 67, in default
+    return super().default(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\AppData\Local\Programs\Python\Python311\Lib\json\encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type AttributeError is not JSON serializable
+2024-06-29 10:35:56,782 - hirework.views - ERROR - Error in LoginView_ from POST method : 'str' object has no attribute 'save'
+2024-06-29 10:39:42,314 - django.request - ERROR - Internal Server Error: /hirework/web/tester/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\views.py", line 135, in tester
+    difference = datetime.datetime.utcnow() - the_token.updated_at
+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+TypeError: can't subtract offset-naive and offset-aware datetimes
+2024-06-29 10:40:00,033 - django.request - ERROR - Internal Server Error: /hirework/web/tester/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\views.py", line 135, in tester
+    difference = datetime.datetime.now() - the_token.updated_at
+                 ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+TypeError: can't subtract offset-naive and offset-aware datetimes
+2024-06-29 11:05:25,351 - hirework.views - ERROR - Error in LoginView_ from POST method : 'UserModel' object has no attribute 'usertokenmodel_set'
+2024-06-29 12:08:06,916 - django.request - ERROR - Internal Server Error: /hirework/web/logout/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 329, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: NOT NULL constraint failed: hirework_usertokenmodel.token
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\views.py", line 486, in LogoutView
+    UserTokenModel.objects.filter(token = request.headers.get("Authorization").replace("Bearer ",'')).update(token = None)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\models\query.py", line 1253, in update
+    rows = query.get_compiler(self.db).execute_sql(CURSOR)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1990, in execute_sql
+    cursor = super().execute_sql(result_type)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 329, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: NOT NULL constraint failed: hirework_usertokenmodel.token
+2024-06-29 13:54:49,606 - django.request - ERROR - Internal Server Error: /hirework/web/tester/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\views.py", line 134, in tester
+    the_token = request.headers.get("Authorization").replace("Bearer ",'')
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'replace'
+2024-06-29 14:04:27,789 - django.request - ERROR - Internal Server Error: /hirework/web/tester/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\views.py", line 135, in tester
+    tm = datetime.datetime.now() - str(datetime.datetime.now())
+         ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+TypeError: unsupported operand type(s) for -: 'datetime.datetime' and 'str'
+2024-06-29 14:05:43,256 - django.request - ERROR - Internal Server Error: /hirework/web/tester/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\views.py", line 135, in tester
+    tm = datetime.datetime.now() - datetime.datetime.strptime(str(datetime.datetime.now()), "%Y-%m-%d %H:%M:%S")
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\AppData\Local\Programs\Python\Python311\Lib\_strptime.py", line 568, in _strptime_datetime
+    tt, fraction, gmtoff_fraction = _strptime(data_string, format)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\AppData\Local\Programs\Python\Python311\Lib\_strptime.py", line 352, in _strptime
+    raise ValueError("unconverted data remains: %s" %
+ValueError: unconverted data remains: .194012
+2024-06-29 14:06:05,221 - django.request - ERROR - Internal Server Error: /hirework/web/tester/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\views.py", line 135, in tester
+    tm = datetime.datetime.now() - datetime.datetime.strptime(mt, "%Y-%m-%d %H:%M:%S")
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\AppData\Local\Programs\Python\Python311\Lib\_strptime.py", line 568, in _strptime_datetime
+    tt, fraction, gmtoff_fraction = _strptime(data_string, format)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\AppData\Local\Programs\Python\Python311\Lib\_strptime.py", line 352, in _strptime
+    raise ValueError("unconverted data remains: %s" %
+ValueError: unconverted data remains: .164376
+2024-06-29 14:06:06,579 - django.request - ERROR - Internal Server Error: /hirework/web/tester/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\views.py", line 135, in tester
+    tm = datetime.datetime.now() - datetime.datetime.strptime(mt, "%Y-%m-%d %H:%M:%S")
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\AppData\Local\Programs\Python\Python311\Lib\_strptime.py", line 568, in _strptime_datetime
+    tt, fraction, gmtoff_fraction = _strptime(data_string, format)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\AppData\Local\Programs\Python\Python311\Lib\_strptime.py", line 352, in _strptime
+    raise ValueError("unconverted data remains: %s" %
+ValueError: unconverted data remains: .549245
+2024-06-29 14:06:07,781 - django.request - ERROR - Internal Server Error: /hirework/web/tester/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\views.py", line 135, in tester
+    tm = datetime.datetime.now() - datetime.datetime.strptime(mt, "%Y-%m-%d %H:%M:%S")
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\AppData\Local\Programs\Python\Python311\Lib\_strptime.py", line 568, in _strptime_datetime
+    tt, fraction, gmtoff_fraction = _strptime(data_string, format)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\AppData\Local\Programs\Python\Python311\Lib\_strptime.py", line 352, in _strptime
+    raise ValueError("unconverted data remains: %s" %
+ValueError: unconverted data remains: .759116
+2024-06-29 14:06:08,592 - django.request - ERROR - Internal Server Error: /hirework/web/tester/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\views.py", line 135, in tester
+    tm = datetime.datetime.now() - datetime.datetime.strptime(mt, "%Y-%m-%d %H:%M:%S")
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\AppData\Local\Programs\Python\Python311\Lib\_strptime.py", line 568, in _strptime_datetime
+    tt, fraction, gmtoff_fraction = _strptime(data_string, format)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\AppData\Local\Programs\Python\Python311\Lib\_strptime.py", line 352, in _strptime
+    raise ValueError("unconverted data remains: %s" %
+ValueError: unconverted data remains: .569540
+2024-07-01 12:26:11,353 - hirework.views - ERROR - Error in LogoutView_ from POST method : Authentication credentials were not provided
+2024-07-01 12:27:14,363 - hirework.views - ERROR - Error in LogoutView_ from POST method : Authentication credentials were not provided
+2024-07-04 14:54:35,117 - hirework.views - ERROR - Error in UserDetailsView from POST method : Admin or Company person cannot access this url
+2024-07-04 14:54:35,125 - django.request - ERROR - Internal Server Error: /hirework/web/myprofile/
+2024-07-04 14:55:41,377 - hirework.views - ERROR - Error in UserDetailsView from POST method : {'designation': [ErrorDetail(string='Invalid pk "1" - object does not exist.', code='does_not_exist')]}
+2024-07-04 14:55:41,379 - hirework.views - ERROR - Error in UserDetailsView from POST method : You must call `.is_valid()` before accessing `.errors`.
+2024-07-04 14:55:41,381 - django.request - ERROR - Internal Server Error: /hirework/web/myprofile/
+2024-07-04 15:02:30,558 - hirework.views - ERROR - Error in UserDetailsView from POST method : {'designation': [ErrorDetail(string='Invalid pk "1" - object does not exist.', code='does_not_exist')]}
+2024-07-04 15:02:30,774 - django.request - ERROR - Internal Server Error: /hirework/web/myprofile/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\views.py", line 2415, in post
+    logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(user_serialiser.errors)}')
+                                                                                               ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\serializers.py", line 576, in errors
+    ret = super().errors
+          ^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\serializers.py", line 260, in errors
+    raise AssertionError(msg)
+AssertionError: You must call `.is_valid()` before accessing `.errors`.
+2024-07-04 15:05:10,071 - django.request - ERROR - Internal Server Error: /hirework/web/myprofile/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\views.py", line 2415, in post
+    print("two",user_serialiser.errors)
+                ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\serializers.py", line 576, in errors
+    ret = super().errors
+          ^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\serializers.py", line 260, in errors
+    raise AssertionError(msg)
+AssertionError: You must call `.is_valid()` before accessing `.errors`.
+2024-07-04 15:08:41,571 - hirework.views - ERROR - Error in UserDetailsView from POST method : {'designation': [ErrorDetail(string='Invalid pk "1" - object does not exist.', code='does_not_exist')]}
+2024-07-04 15:08:41,607 - django.request - ERROR - Internal Server Error: /hirework/web/myprofile/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\views.py", line 2428, in post
+    logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(user_serialiser.errors)}')
+                                                                                               ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\serializers.py", line 576, in errors
+    ret = super().errors
+          ^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\serializers.py", line 260, in errors
+    raise AssertionError(msg)
+AssertionError: You must call `.is_valid()` before accessing `.errors`.
+2024-07-04 15:08:43,646 - hirework.views - ERROR - Error in UserDetailsView from POST method : {'designation': [ErrorDetail(string='Invalid pk "1" - object does not exist.', code='does_not_exist')]}
+2024-07-04 15:08:43,666 - django.request - ERROR - Internal Server Error: /hirework/web/myprofile/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\views.py", line 2428, in post
+    logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(user_serialiser.errors)}')
+                                                                                               ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\serializers.py", line 576, in errors
+    ret = super().errors
+          ^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\serializers.py", line 260, in errors
+    raise AssertionError(msg)
+AssertionError: You must call `.is_valid()` before accessing `.errors`.
+2024-07-04 15:09:24,370 - django.request - ERROR - Internal Server Error: /hirework/web/myprofile/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\views.py", line 2435, in post
+    "errors" : serialiser_errors([serializer, user_serialiser])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\views.py", line 87, in serialiser_errors
+    for error in serial.errors.keys():
+                 ^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\serializers.py", line 576, in errors
+    ret = super().errors
+          ^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\serializers.py", line 260, in errors
+    raise AssertionError(msg)
+AssertionError: You must call `.is_valid()` before accessing `.errors`.
+2024-07-04 15:33:33,088 - hirework.views - ERROR - Error in UserDetailsView from POST method : {'designation': [ErrorDetail(string='Invalid pk "1" - object does not exist.', code='does_not_exist')]}
+2024-07-04 15:33:33,088 - hirework.views - ERROR - Error in UserDetailsView from POST method : You must call `.is_valid()` before accessing `.errors`.
+2024-07-04 15:33:33,088 - django.request - ERROR - Internal Server Error: /hirework/web/myprofile/
+2024-07-04 15:36:01,321 - hirework.views - ERROR - Error in UserDetailsView from POST method : {'designation': [ErrorDetail(string='Invalid pk "1" - object does not exist.', code='does_not_exist')]}
+2024-07-05 10:12:27,620 - hirework.views - ERROR - Error in UserResumeView_ from POST method : Cannot assign "4": "UserDetailsModel.user" must be a "UserModel" instance.
+2024-07-05 10:12:36,985 - hirework.views - ERROR - Error in UserResumeView_ from POST method : Cannot assign "4": "UserDetailsModel.user" must be a "UserModel" instance.
+2024-07-05 10:14:24,417 - hirework.views - ERROR - Error in UserResumeView_ from POST method : Cannot assign "4": "UserDetailsModel.user" must be a "UserModel" instance.
+2024-07-05 10:14:38,186 - hirework.views - ERROR - Error in UserResumeView_ from POST method : Either Resume or Objective or Skills field should be present
+2024-07-05 10:14:42,067 - hirework.views - ERROR - Error in UserResumeView_ from POST method : Cannot assign "4": "UserDetailsModel.user" must be a "UserModel" instance.
+2024-07-05 10:15:33,326 - hirework.views - ERROR - Error in UserResumeView_ from POST method : Cannot assign "4": "UserDetailsModel.user" must be a "UserModel" instance.
+2024-07-05 10:17:40,924 - hirework.views - ERROR - Error in UserResumeView_ from POST method : Field 'id' expected a number but got '['.
+2024-07-05 12:15:44,994 - django.request - ERROR - Internal Server Error: /hirework/app/favorites/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 415, in initial
+    self.check_permissions(request)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 332, in check_permissions
+    if not permission.has_permission(request, self):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: OnlyUserPermission.has_permission() missing 1 required positional argument: 'view'
+2024-07-05 12:16:07,834 - hirework.views - ERROR - Error in FavoritesView from POST method : Cannot assign "'1'": "FavoritesModel.job" must be a "JobsModel" instance.
+2024-07-05 12:16:07,834 - django.request - ERROR - Internal Server Error: /hirework/app/favorites/
+2024-07-05 12:17:04,235 - hirework.views - ERROR - Error in FavoritesView from POST method : not enough values to unpack (expected 2, got 1)
+2024-07-05 12:17:04,235 - django.request - ERROR - Internal Server Error: /hirework/app/favorites/
+2024-07-05 12:17:16,842 - hirework.views - ERROR - Error in FavoritesView from POST method : not enough values to unpack (expected 2, got 1)
+2024-07-05 12:17:16,842 - django.request - ERROR - Internal Server Error: /hirework/app/favorites/
+2024-07-05 12:17:35,584 - hirework.views - ERROR - Error in FavoritesView from POST method : not enough values to unpack (expected 2, got 1)
+2024-07-05 12:17:35,584 - django.request - ERROR - Internal Server Error: /hirework/app/favorites/
+2024-07-05 12:19:24,883 - django.request - ERROR - Internal Server Error: /hirework/app/favorites/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\views.py", line 3746, in post
+    FavoritesModel.objects.create(user = verified_user, job = get_object_or_404(JobsModel,request.data.get("job_id")))
+                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\shortcuts.py", line 86, in get_object_or_404
+    return queryset.get(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\models\query.py", line 635, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\models\query.py", line 1476, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\models\query.py", line 1494, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\models\query.py", line 1501, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\models\sql\query.py", line 1613, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\models\sql\query.py", line 1645, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\models\sql\query.py", line 1492, in build_filter
+    arg, value = filter_expr
+    ^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 1)
+2024-07-05 12:20:26,266 - django.request - ERROR - Internal Server Error: /hirework/app/favorites/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\views.py", line 3746, in post
+    the_job = get_object_or_404(JobsModel,request.data.get("job_id"))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\shortcuts.py", line 86, in get_object_or_404
+    return queryset.get(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\models\query.py", line 635, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\models\query.py", line 1476, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\models\query.py", line 1494, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\models\query.py", line 1501, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\models\sql\query.py", line 1613, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\models\sql\query.py", line 1645, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\db\models\sql\query.py", line 1492, in build_filter
+    arg, value = filter_expr
+    ^^^^^^^^^^
+ValueError: not enough values to unpack (expected 2, got 1)
+2024-07-05 15:06:05,714 - hirework.views - ERROR - Error in LoginView_ from POST method : 'RelatedManager' object has no attribute 'resume'
+2024-07-05 15:06:23,811 - hirework.views - ERROR - Error in LoginView_ from POST method : 'UserModel' object has no attribute 'userdetailsmodel'
+2024-07-05 15:06:32,079 - hirework.views - ERROR - Error in LoginView_ from POST method : 'RelatedManager' object has no attribute 'resume'
+2024-07-05 15:09:20,607 - hirework.views - ERROR - Error in LoginView_ from POST method : 'RelatedManager' object has no attribute 'resume'
+2024-07-05 15:09:21,735 - hirework.views - ERROR - Error in LoginView_ from POST method : 'RelatedManager' object has no attribute 'resume'
+2024-07-05 15:11:48,299 - hirework.views - ERROR - Error in LoginView_ from POST method : 'RelatedManager' object has no attribute 'resume'
+2024-07-05 15:12:22,113 - hirework.views - ERROR - Error in LoginView_ from POST method : 'UserModel' object has no attribute 'userdetailsmodel'
+2024-07-05 15:12:33,204 - hirework.views - ERROR - Error in LoginView_ from POST method : create_reverse_many_to_one_manager.<locals>.RelatedManager.__call__() missing 1 required keyword-only argument: 'manager'
+2024-07-05 15:12:47,988 - hirework.views - ERROR - Error in LoginView_ from POST method : create_reverse_many_to_one_manager.<locals>.RelatedManager.__call__() missing 1 required keyword-only argument: 'manager'
+2024-07-05 15:14:00,076 - hirework.views - ERROR - Error in LoginView_ from POST method : 'UserModel' object has no attribute 'userdetailsmodel'
+2024-07-05 15:14:19,557 - hirework.views - ERROR - Error in LoginView_ from POST method : 'RelatedManager' object has no attribute 'resume'
+2024-07-05 15:14:42,161 - hirework.views - ERROR - Error in LoginView_ from POST method : 'RelatedManager' object has no attribute 'resume'
+2024-07-05 15:15:26,521 - hirework.views - ERROR - Error in LoginView_ from POST method : 'RelatedManager' object has no attribute 'resume'
