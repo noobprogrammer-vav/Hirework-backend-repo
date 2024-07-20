@@ -829,3 +829,114 @@ ValueError: not enough values to unpack (expected 2, got 1)
 2024-07-05 15:14:19,557 - hirework.views - ERROR - Error in LoginView_ from POST method : 'RelatedManager' object has no attribute 'resume'
 2024-07-05 15:14:42,161 - hirework.views - ERROR - Error in LoginView_ from POST method : 'RelatedManager' object has no attribute 'resume'
 2024-07-05 15:15:26,521 - hirework.views - ERROR - Error in LoginView_ from POST method : 'RelatedManager' object has no attribute 'resume'
+2024-07-08 15:58:18,110 - django.request - ERROR - Internal Server Error: /hirework/web/useremployment/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Projects\Hirework\hirework_backed_2\hirework_backend\hirework\views.py", line 2742, in put
+    if(request.data.get("id") in None):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: argument of type 'NoneType' is not iterable
+2024-07-10 10:43:46,941 - hirework.views - ERROR - Error in UserResumeView_ from POST method : 'RelatedManager' object has no attribute 'save'
+2024-07-10 10:43:47,206 - django.request - ERROR - Internal Server Error: /hirework/app/useraccedit/
+Traceback (most recent call last):
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\decorators\csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 511, in dispatch
+    self.response = self.finalize_response(request, response, *args, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\adith\OneDrive\Desktop\FullTime\Venv\Lib\site-packages\rest_framework\views.py", line 423, in finalize_response
+    assert isinstance(response, HttpResponseBase), (
+AssertionError: Expected a `Response`, `HttpResponse` or `StreamingHttpResponse` to be returned from the view, but received a `<class 'NoneType'>`
+2024-07-10 10:45:08,702 - hirework.views - ERROR - Error in UserResumeView_ from POST method : 'RelatedManager' object has no attribute 'save'
+2024-07-10 10:45:08,702 - django.request - ERROR - Internal Server Error: /hirework/app/useraccedit/
+2024-07-10 10:45:22,441 - hirework.views - ERROR - Error in UserResumeView_ from POST method : 'UserModel' object has no attribute 'userdetailsmodel'
+2024-07-10 10:45:22,441 - django.request - ERROR - Internal Server Error: /hirework/app/useraccedit/
+2024-07-10 10:45:35,613 - hirework.views - ERROR - Error in UserResumeView_ from POST method : 'RelatedManager' object has no attribute 'save'
+2024-07-10 10:45:35,615 - django.request - ERROR - Internal Server Error: /hirework/app/useraccedit/
+2024-07-10 10:46:46,579 - hirework.views - ERROR - Error in UserResumeView_ from POST method : Cannot assign "' 1'": "UserDetailsModel.preferred_city" must be a "CitiesModel" instance.
+2024-07-10 10:46:46,580 - django.request - ERROR - Internal Server Error: /hirework/app/useraccedit/
+2024-07-10 12:39:36,487 - hirework.views - ERROR - Error in UserCertificateView from POST method : user field cannt be null
+2024-07-10 12:39:36,488 - django.request - ERROR - Internal Server Error: /hirework/app/usercertificate/
+2024-07-10 12:41:29,172 - hirework.views - ERROR - Error in UserCertificateView from POST method : certificate_id field cannt be null
+2024-07-10 12:41:29,172 - django.request - ERROR - Internal Server Error: /hirework/app/usercertificate/
+2024-07-10 12:41:36,849 - hirework.views - ERROR - Error in UserCertificateView from POST method : name field cannt be null
+2024-07-10 12:41:36,849 - django.request - ERROR - Internal Server Error: /hirework/app/usercertificate/
+2024-07-10 12:41:54,301 - hirework.views - ERROR - Error in UserCertificateView from POST method : organization field cannt be null
+2024-07-10 12:41:54,302 - django.request - ERROR - Internal Server Error: /hirework/app/usercertificate/
+2024-07-10 12:42:06,257 - hirework.views - ERROR - Error in UserCertificateView from POST method : certified_date field cannt be null
+2024-07-10 12:42:06,257 - django.request - ERROR - Internal Server Error: /hirework/app/usercertificate/
+2024-07-10 12:42:19,015 - hirework.views - ERROR - Error in UserCertificateView from POST method : exp_date field cannt be null
+2024-07-10 12:42:19,016 - django.request - ERROR - Internal Server Error: /hirework/app/usercertificate/
+2024-07-10 12:42:33,086 - hirework.views - ERROR - Error in UserCertificateView from POST method : certificate_link field cannt be null
+2024-07-10 12:42:33,086 - django.request - ERROR - Internal Server Error: /hirework/app/usercertificate/
+2024-07-10 12:42:50,164 - hirework.views - ERROR - Error in UserCertificateView from POST method : cetificate_doc field cannt be null
+2024-07-10 12:42:50,165 - django.request - ERROR - Internal Server Error: /hirework/app/usercertificate/
+2024-07-11 11:16:40,757 - hirework.views - ERROR - Error in FavoritesView from POST method : job_id field cannot be null
+2024-07-11 11:16:40,759 - django.request - ERROR - Internal Server Error: /hirework/app/favourites/
+2024-07-11 11:17:00,630 - hirework.views - ERROR - Error in FavoritesView from POST method : No JobsModel matches the given query.
+2024-07-11 11:17:00,630 - django.request - ERROR - Internal Server Error: /hirework/app/favourites/
+2024-07-11 11:17:05,745 - hirework.views - ERROR - Error in FavoritesView from POST method : No JobsModel matches the given query.
+2024-07-11 11:17:05,745 - django.request - ERROR - Internal Server Error: /hirework/app/favourites/
+2024-07-11 11:17:10,107 - hirework.views - ERROR - Error in FavoritesView from POST method : No JobsModel matches the given query.
+2024-07-11 11:17:10,107 - django.request - ERROR - Internal Server Error: /hirework/app/favourites/
+2024-07-12 15:15:25,113 - hirework.views - ERROR - Error in JobApplicationView from POST method : job field cannot be null
+2024-07-12 15:16:43,465 - hirework.views - ERROR - Error in SignupView_ from POST method : mobile field cannot be null
+2024-07-12 15:19:31,945 - hirework.views - ERROR - Error in JobApplicationView from POST method : User Details are empty
+2024-07-12 15:22:14,505 - hirework.views - ERROR - Error in JobApplicationView from POST method : User Resume cannot be null
+2024-07-12 16:19:23,708 - hirework.views - ERROR - Error in ChatterBox from GET method : id field cannot be null
+2024-07-12 16:19:47,806 - hirework.views - ERROR - Error in ChatterBox from GET method : id field cannot be null
+2024-07-12 16:19:58,099 - hirework.views - ERROR - Error in ChatterBox from GET method : You are not authorized to chat with this application
+2024-07-12 16:20:06,835 - hirework.views - ERROR - Error in ChatterBox from GET method : No JobApplicationModel matches the given query.
+2024-07-12 16:21:16,765 - hirework.views - ERROR - Error in ChatterBox from GET method : id field is required
+2024-07-12 16:21:21,645 - hirework.views - ERROR - Error in ChatterBox from GET method : message field is required
+2024-07-12 16:21:31,262 - hirework.views - ERROR - Error in ChatterBox from GET method : You are not authorized to chat with this application
+2024-07-16 11:54:11,394 - hirework.views - ERROR - Error in ForgotView_ from POST method : (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-70b7ecab598sm5463445b3a.159 - gsmtp')
+2024-07-16 11:59:11,345 - hirework.views - ERROR - Error in ForgotView_ from POST method : (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-70b7eccc022sm5450645b3a.204 - gsmtp')
+2024-07-16 12:03:15,754 - hirework.views - ERROR - Error in ForgotView_ from POST method : (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials 98e67ed59e1d1-2caedc92d1esm5404317a91.44 - gsmtp')
+2024-07-16 12:03:20,379 - hirework.views - ERROR - Error in ForgotView_ from POST method : (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-70b7ebc37absm5460270b3a.85 - gsmtp')
+2024-07-16 12:04:38,062 - hirework.views - ERROR - Error in ForgotView_ from POST method : (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-70b81972f56sm5246122b3a.84 - gsmtp')
+2024-07-16 12:07:18,245 - hirework.views - ERROR - Error in ForgotView_ from POST method : (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d9443c01a7336-1fc0eea7930sm49667925ad.241 - gsmtp')
+2024-07-16 12:07:25,281 - hirework.views - ERROR - Error in ForgotView_ from POST method : (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-70b7eb9c950sm5457242b3a.26 - gsmtp')
+2024-07-16 12:09:17,022 - hirework.views - ERROR - Error in ForgotView_ from POST method : EMAIL_USE_TLS/EMAIL_USE_SSL are mutually exclusive, so only set one of those settings to True.
+2024-07-16 12:09:33,694 - hirework.views - ERROR - Error in ForgotView_ from POST method : [SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1006)
+2024-07-16 12:09:46,598 - hirework.views - ERROR - Error in ForgotView_ from POST method : (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-70b7ec7ff8csm5484580b3a.135 - gsmtp')
+2024-07-16 12:28:06,516 - hirework.views - ERROR - Error in LoginView_ from POST method : No UserModel matches the given query.
+2024-07-16 12:30:54,845 - hirework.views - ERROR - Error in LoginView_ from POST method : Email or Password not present
+2024-07-16 12:31:23,013 - hirework.views - ERROR - Error in LoginView_ from POST method : No UserModel matches the given query.
+2024-07-16 13:52:57,567 - hirework.views - ERROR - Error in ForgotView_ from POST method : (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-70b7ecabf2fsm5647763b3a.182 - gsmtp')
+2024-07-16 14:17:22,295 - hirework.views - ERROR - Error in ForgotView_ from POST method : (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d9443c01a7336-1fc0bc27116sm53369165ad.129 - gsmtp')
+2024-07-16 15:12:49,507 - hirework.views - ERROR - Error in ForgotView_ from POST method : [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+2024-07-16 15:14:57,264 - hirework.views - ERROR - Error in ForgotView_ from POST method : [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+2024-07-19 14:27:44,932 - hirework.views - ERROR - Error in JobsView from GET method : Requested ID is not available
+2024-07-19 14:28:14,134 - hirework.views - ERROR - Error in JobsView from GET method : Requested ID is not available

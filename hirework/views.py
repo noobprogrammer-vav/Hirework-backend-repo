@@ -22,11 +22,25 @@ from .models import *
 
 import math, random, logging, os, jwt, datetime, hashlib
 from dotenv import load_dotenv
+
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
+# from django.core.mail import send_mail
+
+cred = credentials.Certificate("hirework\serviceAccountKey.json")
+# firebase_admin.initialize_app(cred)
+firebase_admin.initialize_app(cred,{
+    'databaseURL': 'https://hirework-chat-default-rtdb.firebaseio.com/'
+})
+chatter = db.reference("chats/")
+
+
 load_dotenv()
 SECRET_KEY = os.environ.get('SECRET_KEY')
 logger = logging.getLogger(__name__)
 
-# Create your views here.
+
 
 def Header_Checker(request):
     the_token = request.headers.get("Authorization")
@@ -87,11 +101,15 @@ def serialiser_errors(serials):
         if(serial.is_valid()):
             pass
         else:
-            for error in serial.errors.keys():
-                all_errors.append({
-                    "field" : error,
-                    "message" : serial.errors.get(error)[0]
-                })
+            if(type(serial) == list):
+                for error in serial.errors:
+                    all_errors.append(error)
+            else:
+                for error in serial.errors.keys():
+                    all_errors.append({
+                        "field" : error,
+                        "message" : serial.errors.get(error)[0]
+                    })
     return all_errors
 
 def otp_generator(): 
@@ -102,7 +120,7 @@ def otp_generator():
     hashed_otp = jwt.encode({"otp" : OTP, "gen_time" : str(datetime.datetime.now())}, SECRET_KEY, algorithm="HS256")
     # hashed_otp = hashlib.sha256(OTP.encode("utf-8")).hexdigest()
     logger.info(f'OTP is {OTP} ')
-    return hashed_otp
+    return [hashed_otp, OTP]
 
 # def user_checker(user_id):
 #     user = get_object_or_404(UserModel, pk= user_id)
@@ -149,7 +167,7 @@ def handle_exceptions(func):
                 "status": "error",
                 "code": "500",
                 "message": str(e),
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            }, status=status.HTTP_406_NOT_ACCEPTABLE)
     return wrapper
 #========================================================== Comments-tests ==========================================================
 
@@ -162,36 +180,6 @@ def tester(request):
 
     return Response({"status" : my_test })
 
-# else:
-#     #print(serialiser.errors)
-#     return Response(
-#         {
-#         "status" : "error" , 
-#         "code" : "400", 
-#         "message" : "Signup failed", 
-#         "data" : { 
-#             "errors" : serialiser_errors(serialiser)
-#             }
-#         },status=status.HTTP_400_BAD_REQUEST)
-
-
-    # def post(self,request):
-    #     logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
-    #     try:
-    #         return Response({
-    #             "status" : "success",
-    #             "code" : "200",
-    #             "message" : "OK",
-    #             "data" : data
-    #         }, status=status.HTTP_200_OK)
-    #     except Exception as e:
-    #         logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
-    #         return Response(
-    #             {
-    #             "status" : "error" , 
-    #             "code" : "500", 
-    #             "message" : str(e), 
-    #             },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
 # logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
@@ -199,23 +187,36 @@ def tester(request):
 #========================================================== GET-LOGS ==========================================================
 
 @api_view(["GET"])
-@permission_classes([IsAdminUser])
+@permission_classes([CustomIsAdmin, IsAdminUser])
 def GetLogView(request):
     logger.info(f'Reqest for GetLogView_ using GET method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
     
-    log_path = "hirework_django_logs/info_logs.txt"
-    if(request.query_params.get("type") == "error"):
-        log_path = "hirework_django_logs/error_logs.txt"
-    if os.path.exists(log_path):
-        log_content = []
-        with open(log_path, 'r') as log_file:
-            for line in log_file:
-                log_content.append(line.strip())
-        
-        return Response({"Logs" : log_content})
-    else:
-        logger.error(f'Error in GetLogView_ from GET method : Log file not found')
-        return Response({'message': 'Log file not found'}, status=status.HTTP_404_NOT_FOUND)
+    # log_path = "hirework_django_logs/info_logs.txt"
+    # if(request.query_params.get("type") == "error"):
+    #     log_path = "hirework_django_logs/error_logs.txt"
+    # if os.path.exists(log_path):
+    #     log_content = []
+    #     with open(log_path, 'r') as log_file:
+    #         for line in log_file:
+    #             log_content.append(line.strip())
+
+    log_content = LogsModel.objects.all()
+    if(request.query_params["method"] != None):
+        requested_method = str(request.query_params["method"]).upper()
+        log_content = log_content.filter(method=requested_method)
+    if(request.query_params["api"] != None):
+        log_content = log_content.filter(api=request.query_params["api"])
+    
+    return Response({
+        "status": "success",
+        "code": "200",
+        "message": "Logs fetched successfully",
+        "data": list(log_content.values())
+    })
+
+    # else:
+    #     logger.error(f'Error in GetLogView_ from GET method : Log file not found')
+    #     return Response({'message': 'Log file not found'}, status=status.HTTP_404_NOT_FOUND)
 
 #========================================================== Roles-and-Permissions ==========================================================
 
@@ -263,6 +264,7 @@ class PermissionsView(APIView):
                 "message" : "CREATED", 
             },status=status.HTTP_201_CREATED) 
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response({
                 "status" : "error" , 
@@ -291,6 +293,7 @@ class PermissionsView(APIView):
             },status=status.HTTP_201_CREATED) 
             
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response({
                 "status" : "error" , 
@@ -304,7 +307,6 @@ class PermissionsView(APIView):
 
 #========================================================== Signup-Login-Logout-OTP-PWD ==========================================================
 
-#Over
 @api_view(["POST"])
 def SignupView(request):
     try:
@@ -320,8 +322,10 @@ def SignupView(request):
             
         the_password = hashlib.sha256(request.data.get("password").encode("utf-8")).hexdigest()
         the_user = UserModel.objects.create(name = request.data.get("name"), email = request.data.get("email"), password = the_password, mobile = request.data.get("mobile"), is_company = request.data.get("company"))
-        the_user.email_status = otp_generator()
-        the_user.mobile_status = otp_generator()
+        email_otp = otp_generator()
+        mobile_otp = otp_generator()
+        the_user.email_status = email_otp[0]
+        the_user.mobile_status = mobile_otp[0]
         the_user.save()
         the_parent = False
         if the_user.parent_user is not None:
@@ -335,6 +339,8 @@ def SignupView(request):
             the_city = get_object_or_404(CitiesModel, pk = request.data.get("organization_city"))
             the_industry = get_object_or_404(IndustriesModel, pk = request.data.get("organization_industry"))
             CompanyDetailsModel.objects.create(user = the_user, organization_name = request.data.get("organization_name"), organization_email = request.data.get("organization_email"), organization_city = the_city, industry = the_industry)
+        
+        # send_mail("Welcome to Hirework", f"The OTP is {email_otp[1]}", "sakshamjain.capace@gmail.com", [the_user.email])
         return Response(
             {
             "status" : "success" , 
@@ -343,6 +349,7 @@ def SignupView(request):
             "token" : the_token
             },status=status.HTTP_201_CREATED)
     except Exception as e:
+        LogsModel.objects.create(api = "SignupView",method = "POST", error = str(e) )
         logger.error(f'Error in SignupView_ from POST method : {str(e)}')
         return Response(
             {
@@ -420,6 +427,7 @@ def OtpView(request):
             },status=status.HTTP_202_ACCEPTED)
 
     except Exception as e:
+        LogsModel.objects.create(api = "OtpView_",method = "POST", error = str(e) )
         logger.error(f'Error in OtpView_ from POST method : {str(e)}')
         return Response(
             {
@@ -439,9 +447,12 @@ def ReotpView(request):
         verified_user = authenticator(request)
         if(verified_user.email_status == None or verified_user.email_status == ''):
             raise Exception("OTPs already Verified")
-        verified_user.email_status = otp_generator()
-        verified_user.mobile_status = otp_generator()
+        email_otp = otp_generator()
+        mobile_otp = otp_generator()
+        verified_user.email_status = email_otp[0]
+        verified_user.mobile_status = mobile_otp[0]
         verified_user.save()
+        # send_mail("Resend OTP", f"The OTP is {email_otp[1]}", "sakshamjain.capace@gmail.com", [verified_user.email])
 
         return Response(
             {
@@ -450,6 +461,7 @@ def ReotpView(request):
             "message" : "OTPs regeneration Successful", 
             },status=status.HTTP_201_CREATED)
     except Exception as e:
+        LogsModel.objects.create(api = "ReotpView",method = "POST", error = str(e) )
         logger.error(f'Error in ReotpView_ from POST method : {str(e)}')
         return Response(
             {
@@ -461,7 +473,6 @@ def ReotpView(request):
                 }
             },status=status.HTTP_400_BAD_REQUEST)
 
-#Over
 @api_view(["POST"])
 def LoginView(request):
     logger.info(f'Reqest for LoginView_ using POST method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
@@ -494,6 +505,7 @@ def LoginView(request):
             },status=status.HTTP_202_ACCEPTED)
     
     except ValueError as v:
+        LogsModel.objects.create(api = "LoginView",method = "POST", error = str(v) )
         logger.error(f'Error in LoginView_ from POST method : {str(v)}')
         return Response({
             "status" : "error" , 
@@ -506,6 +518,7 @@ def LoginView(request):
             } },status=status.HTTP_400_BAD_REQUEST)
     
     except Exception as e:
+        LogsModel.objects.create(api = "LoginView",method = "POST", error = str(e) )
         logger.error(f'Error in LoginView_ from POST method : {str(e)}')
         return Response({
             "status" : "error" , 
@@ -515,7 +528,6 @@ def LoginView(request):
                 "errors" : str(e)
             } },status=status.HTTP_401_UNAUTHORIZED)
 
-#Over
 @api_view(["POST"])
 def LogoutView(request):
     logger.info(f'Reqest for LogoutView_ using POST method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
@@ -531,6 +543,7 @@ def LogoutView(request):
             "message" : "Logout Successful", 
         },status=status.HTTP_200_OK)
     except Exception as e:
+        LogsModel.objects.create(api = "LogoutView",method = "POST", error = str(e) )
         logger.error(f'Error in LogoutView_ from POST method : {str(e)}')
         return Response({
             "status" : "error" ,
@@ -542,7 +555,6 @@ def LogoutView(request):
                 },status=status.HTTP_401_UNAUTHORIZED)
     
 
-#Over
 @api_view(["POST"])
 def ForgotView(request):
     try:
@@ -550,8 +562,12 @@ def ForgotView(request):
         if request.data.get("email") is None:
             raise Exception("email field cannot be null")
         the_user = get_object_or_404(UserModel, email = request.data.get("email"))
-        the_user.otp = otp_generator()
+        the_otp = otp_generator()
+        the_user.otp = the_otp[0]
         the_user.save()
+        # send_mail("Forgot Password OTP", f"The OTP is {the_otp[1]}", "sakshamjain.capace@gmail.com", [the_user.email])
+        # send_mail("Forgot Password OTP", f"The OTP is {the_otp[1]}", None, ["sakshamjain.capace@gmail.com"])
+
         return Response(
             {
             "status" : "success" , 
@@ -594,6 +610,7 @@ def ChangePwdView(request):
             "message" : "Updated Successfully", 
             },status=status.HTTP_201_CREATED)
     except Exception as e:
+        LogsModel.objects.create(api = "ChangePwdView",method = "POST", error = str(e) )
         logger.error(f'Error in ChangePwdView_ from POST method : {str(e)}')
         return Response(
             {
@@ -628,13 +645,14 @@ class StatesView(APIView):
                 }
                 },status=status.HTTP_200_OK)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def post(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
@@ -667,14 +685,15 @@ class StatesView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
         
     def put(self,request):
         try:
@@ -710,14 +729,15 @@ class StatesView(APIView):
                 },status=status.HTTP_400_BAD_REQUEST)
         
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def delete(self,request):
         try:
@@ -746,14 +766,15 @@ class StatesView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
         
 class CityView(APIView):
     def get_permissions(self):
@@ -779,13 +800,14 @@ class CityView(APIView):
                 }
                 },status=status.HTTP_200_OK)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def post(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
@@ -820,14 +842,15 @@ class CityView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
         
     def put(self,request):
         try:
@@ -867,14 +890,15 @@ class CityView(APIView):
                 },status=status.HTTP_400_BAD_REQUEST)
         
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def delete(self,request):
         try:
@@ -903,14 +927,15 @@ class CityView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
         
 class IndustriesView(APIView):
     def get_permissions(self):
@@ -933,13 +958,14 @@ class IndustriesView(APIView):
                 }
                 },status=status.HTTP_200_OK)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def post(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
@@ -974,14 +1000,15 @@ class IndustriesView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
         
     def put(self,request):
         try:
@@ -1021,14 +1048,15 @@ class IndustriesView(APIView):
                 },status=status.HTTP_400_BAD_REQUEST)
         
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def delete(self,request):
         try:
@@ -1057,14 +1085,15 @@ class IndustriesView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
 class SkillsView(APIView):
     def get_permissions(self):
@@ -1087,13 +1116,14 @@ class SkillsView(APIView):
                 }
                 },status=status.HTTP_200_OK)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def post(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
@@ -1126,14 +1156,15 @@ class SkillsView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
         
     def put(self,request):
         try:
@@ -1171,14 +1202,15 @@ class SkillsView(APIView):
                 },status=status.HTTP_400_BAD_REQUEST)
         
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def delete(self,request):
         try:
@@ -1207,14 +1239,15 @@ class SkillsView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
 class DesignationView(APIView):
     def get_permissions(self):
@@ -1237,13 +1270,14 @@ class DesignationView(APIView):
                 }
                 },status=status.HTTP_200_OK)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def post(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
@@ -1276,14 +1310,15 @@ class DesignationView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
         
     def put(self,request):
         try:
@@ -1321,14 +1356,15 @@ class DesignationView(APIView):
                 },status=status.HTTP_400_BAD_REQUEST)
         
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def delete(self,request):
         try:
@@ -1357,14 +1393,15 @@ class DesignationView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
 class TagsView(APIView):
     def get_permissions(self):
@@ -1387,13 +1424,14 @@ class TagsView(APIView):
                 }
                 },status=status.HTTP_200_OK)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def post(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
@@ -1426,14 +1464,15 @@ class TagsView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
         
     def put(self,request):
         try:
@@ -1471,14 +1510,15 @@ class TagsView(APIView):
                 },status=status.HTTP_400_BAD_REQUEST)
         
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def delete(self,request):
         try:
@@ -1507,14 +1547,15 @@ class TagsView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
 class LanguageView(APIView):
     def get_permissions(self):
@@ -1537,13 +1578,14 @@ class LanguageView(APIView):
                 }
                 },status=status.HTTP_200_OK)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def post(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
@@ -1576,14 +1618,15 @@ class LanguageView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
         
     def put(self,request):
         try:
@@ -1621,14 +1664,15 @@ class LanguageView(APIView):
                 },status=status.HTTP_400_BAD_REQUEST)
         
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def delete(self,request):
         try:
@@ -1657,14 +1701,15 @@ class LanguageView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
 class BreakReasonView(APIView):
     def get_permissions(self):
@@ -1687,13 +1732,14 @@ class BreakReasonView(APIView):
                 }
                 },status=status.HTTP_200_OK)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def post(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
@@ -1726,14 +1772,15 @@ class BreakReasonView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
         
     def put(self,request):
         try:
@@ -1771,14 +1818,15 @@ class BreakReasonView(APIView):
                 },status=status.HTTP_400_BAD_REQUEST)
         
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def delete(self,request):
         try:
@@ -1807,14 +1855,15 @@ class BreakReasonView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
 class ScreeningQuestionView(APIView):
     def get_permissions(self):
@@ -1837,13 +1886,14 @@ class ScreeningQuestionView(APIView):
                 }
                 },status=status.HTTP_200_OK)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def post(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
@@ -1876,14 +1926,15 @@ class ScreeningQuestionView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
         
     def put(self,request):
         try:
@@ -1921,14 +1972,15 @@ class ScreeningQuestionView(APIView):
                 },status=status.HTTP_400_BAD_REQUEST)
         
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def delete(self,request):
         try:
@@ -1957,14 +2009,15 @@ class ScreeningQuestionView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
 class BenefitsView(APIView):
     def get_permissions(self):
@@ -1987,13 +2040,14 @@ class BenefitsView(APIView):
                 }
                 },status=status.HTTP_200_OK)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def post(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
@@ -2026,14 +2080,15 @@ class BenefitsView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
         
     def put(self,request):
         try:
@@ -2070,14 +2125,15 @@ class BenefitsView(APIView):
                 },status=status.HTTP_400_BAD_REQUEST)
         
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def delete(self,request):
         try:
@@ -2106,14 +2162,15 @@ class BenefitsView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
 class SupplimentalView(APIView):
     def get_permissions(self):
@@ -2136,13 +2193,14 @@ class SupplimentalView(APIView):
                 }
                 },status=status.HTTP_200_OK)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def post(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
@@ -2175,14 +2233,15 @@ class SupplimentalView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
         
     def put(self,request):
         try:
@@ -2219,14 +2278,15 @@ class SupplimentalView(APIView):
                 },status=status.HTTP_400_BAD_REQUEST)
         
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def delete(self,request):
         try:
@@ -2255,14 +2315,15 @@ class SupplimentalView(APIView):
                     }
                 },status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : f"{self.request.method} failed", 
                 "error" : str(e)
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 #========================================================== User Details -> User-POV ==========================================================
@@ -2315,7 +2376,8 @@ class UserDetailsView(APIView):
                 data = []
                 for i in user_language:
                     data.append({
-                        "id" : i.language.pk,
+                        "id" : i.pk,
+                        "language_id" : i.language.pk,
                         "language" : i.language.language,
                         "proficiency" : i.proficiency,
                         "read" : i.read,
@@ -2375,13 +2437,14 @@ class UserDetailsView(APIView):
                 },status=status.HTTP_200_OK)
         
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def post(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
@@ -2436,13 +2499,14 @@ class UserDetailsView(APIView):
                     },status=status.HTTP_400_BAD_REQUEST)
             
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
         
 @api_view(["POST"])
 @permission_classes([OnlyUserPermission])
@@ -2469,10 +2533,10 @@ def UserResumeView(request):
         if(request.data.get("skills") is not None):
             all_skills = set(request.data.get("skills", []))
             pre_user_skills = set(UserSkillModel.objects.filter(user = verified_user).values_list("skill", flat=True))
-            to_delete_skills = pre_user_skills - all_skills
+            # to_delete_skills = pre_user_skills - all_skills
             new_skills = all_skills - pre_user_skills
             
-            UserSkillModel.objects.filter(user= verified_user.pk, skill__in=to_delete_skills).delete()
+            # UserSkillModel.objects.filter(user= verified_user.pk, skill__in=to_delete_skills).delete()
             skillsets = [UserSkillModel(user = verified_user, skill = get_object_or_404(SkillsModel, pk = the_skill)) for the_skill in new_skills]
             UserSkillModel.objects.bulk_create(skillsets)
             
@@ -2488,6 +2552,7 @@ def UserResumeView(request):
         }, status=status.HTTP_200_OK)
 
     except ValueError as v:
+        LogsModel.objects.create(api = "UserResumeView_",method = "POST", error = str(v) )
         logger.error(f'Error in UserResumeView_ from POST method : {str(v)}')
         return Response(
             {
@@ -2503,19 +2568,21 @@ def UserResumeView(request):
                 }
             },status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
+        LogsModel.objects.create(api = "UserResumeView",method = "POST", error = str(e) )
         logger.error(f'Error in UserResumeView_ from POST method : {str(e)}')
         return Response(
             {
             "status" : "error" , 
-            "code" : "500", 
+            "code" : "406", 
             "message" : f"POST method failed", 
             "error" : str(e)
-            },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            },status=status.HTTP_406_NOT_ACCEPTABLE)
 
 @api_view(["POST"])
 @permission_classes([OnlyUserPermission])
 def UserBasicView(request):
     try:
+        logger.info(f'Reqest for UserBasicView_ using POST method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
         verified_user = authenticator(request)
         if(verified_user is False):
             raise Exception("Authentication credentials were not provided")
@@ -2550,13 +2617,14 @@ def UserBasicView(request):
                 },status=status.HTTP_400_BAD_REQUEST)
         
     except Exception as e:
+        LogsModel.objects.create(api = "UserBasicView",method = "POST", error = str(e) )
         logger.error(f'Error in UserBasicView_ from POST method : {str(e)}')
         return Response(
         {
             "status" : "error" , 
-            "code" : "500", 
+            "code" : "406", 
             "message" : str(e), 
-        },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        },status=status.HTTP_406_NOT_ACCEPTABLE)
 
 class UserEducationView(APIView):
     def get_permissions(self):
@@ -2595,7 +2663,7 @@ class UserEducationView(APIView):
                 if (serialiser.is_valid()):
                     pass
                 else:
-                    logger.error(f'Error in UserBasicView_ from POST method : {str(serialiser.errors)}')
+                    logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(serialiser.errors)}')
                 return Response(
                     {
                         "status" : "error" , 
@@ -2607,13 +2675,14 @@ class UserEducationView(APIView):
                     },status=status.HTTP_400_BAD_REQUEST)
             
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def put(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
@@ -2639,7 +2708,7 @@ class UserEducationView(APIView):
                 if (serialiser.is_valid()):
                     pass
                 else:
-                    logger.error(f'Error in UserBasicView_ from POST method : {str(serialiser.errors)}')
+                    logger.error(f'Error in {self.__class__.__name__} using {self.request.method} method : {str(serialiser.errors)}')
                 return Response(
                     {
                         "status" : "error" , 
@@ -2651,18 +2720,19 @@ class UserEducationView(APIView):
                     },status=status.HTTP_400_BAD_REQUEST)
             
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def delete(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
         try:
-            if(request.query_params.get("id") in None):
+            if(request.query_params.get("id") is None):
                 raise ValueError("id field cannt be null")
             get_object_or_404(UserEducationDetailsModel, pk = request.query_params.get("id")).delete()
             return Response({
@@ -2672,13 +2742,14 @@ class UserEducationView(APIView):
             }, status=status.HTTP_200_OK)
             
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
         
 class UserEmploymentView(APIView):
     def get_permissions(self):
@@ -2717,7 +2788,7 @@ class UserEmploymentView(APIView):
                 if (serialiser.is_valid()):
                     pass
                 else:
-                    logger.error(f'Error in UserBasicView_ from POST method : {str(serialiser.errors)}')
+                    logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(serialiser.errors)}')
                 return Response(
                     {
                         "status" : "error" , 
@@ -2729,18 +2800,19 @@ class UserEmploymentView(APIView):
                     },status=status.HTTP_400_BAD_REQUEST)
             
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def put(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
         try:
-            if(request.data.get("id") in None):
+            if(request.data.get("id") is None):
                 raise ValueError("id field cannt be null")
             verified_user = authenticator(request)
             if verified_user is False:
@@ -2762,7 +2834,7 @@ class UserEmploymentView(APIView):
                 if (serialiser.is_valid()):
                     pass
                 else:
-                    logger.error(f'Error in UserBasicView_ from POST method : {str(serialiser.errors)}')
+                    logger.error(f'Error in {self.__class__.__name__} using {self.request.method} method : {str(serialiser.errors)}')
                 return Response(
                     {
                         "status" : "error" , 
@@ -2774,20 +2846,21 @@ class UserEmploymentView(APIView):
                     },status=status.HTTP_400_BAD_REQUEST)
             
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def delete(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
         try:
-            if(request.query_params.get("id") in None):
+            if(request.query_params.get("id") is None):
                 raise ValueError("id field cannt be null")
-            get_object_or_404(UserEmploymentSerialiser, pk = request.query_params.get("id")).delete()
+            get_object_or_404(UserProfessionalDetailsModel, pk = request.query_params.get("id")).delete()
             return Response({
                 "status" : "success", 
                 "code" : "200",
@@ -2795,13 +2868,14 @@ class UserEmploymentView(APIView):
             }, status=status.HTTP_200_OK)
             
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
         
 class UserProjectView(APIView):
     def get_permissions(self):
@@ -2827,13 +2901,14 @@ class UserProjectView(APIView):
             verified_user = authenticator(request)
             if(verified_user is False):
                 raise Exception("Authentication credentials were not provided")
+            
             updated_data = request.data.copy()
             updated_data.update({"user" : verified_user.pk})
             serialiser = UserProjectSerialiser(data = updated_data)
             if (serialiser.is_valid()):
                 saved_data = serialiser.save()
                 skillset = [ProjectSkillModel(project = saved_data, skill = get_object_or_404(SkillsModel, pk = the_skill)) for the_skill in request.data.get('skills')]
-                UserSkillModel.objects.bulk_create(skillset)
+                ProjectSkillModel.objects.bulk_create(skillset)
 
                 return Response({
                     "status" : "success", 
@@ -2856,27 +2931,28 @@ class UserProjectView(APIView):
                     },status=status.HTTP_400_BAD_REQUEST)
             
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def put(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
         try:
-            if(request.data.get("id") in None):
+            if(request.data.get("id") is None):
                 raise ValueError("id field cannt be null")
             verified_user = authenticator(request)
             if(verified_user is False):
                 raise Exception("Authentication credentials were not provided")
             
-            the_data = get_object_or_404(UserProfessionalDetailsModel, pk = request.data.get("id"))
+            the_data = get_object_or_404(UserProjectModel, pk = request.data.get("id"))
             updated_data = request.data.copy()
             updated_data.update({"user" : verified_user.pk})
-            serialiser = UserEmploymentSerialiser(the_data, data = updated_data)
+            serialiser = UserProjectSerialiser(the_data, data = updated_data)
             if (serialiser.is_valid()):
                 saved_data = serialiser.save()
 
@@ -2899,7 +2975,7 @@ class UserProjectView(APIView):
                 if (serialiser.is_valid()):
                     pass
                 else:
-                    logger.error(f'Error in UserBasicView_ from POST method : {str(serialiser.errors)}')
+                    logger.error(f'Error in {self.__class__.__name__} using {self.request.method} method : {str(serialiser.errors)}')
                 return Response(
                     {
                         "status" : "error" , 
@@ -2911,18 +2987,19 @@ class UserProjectView(APIView):
                     },status=status.HTTP_400_BAD_REQUEST)
             
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def delete(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
         try:
-            if(request.query_params.get("id") in None):
+            if(request.query_params.get("id") is None):
                 raise ValueError("id field cannt be null")
             get_object_or_404(UserProjectModel, pk = request.query_params.get("id")).delete()
             return Response({
@@ -2932,13 +3009,14 @@ class UserProjectView(APIView):
             }, status=status.HTTP_200_OK)
             
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
   
 class UserLanguageView(APIView):
     def get_permissions(self):
@@ -2959,17 +3037,20 @@ class UserLanguageView(APIView):
     def post(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
         try:
-            if(request.data.get("data_list") is None):
-                raise ValueError("data_list field cannot be null")
+            required_fields = ["language", "read", "write", "speak", "proficiency"]
+            for field in required_fields:
+                if field not in request.data:
+                    raise ValueError(f"{field} field cannt be null")
+                
+
             verified_user = authenticator(request)
             if(verified_user is False):
                 raise Exception("Authentication credentails were not provided")
             
-            updated_data = request.data.get("data_list")
-            for data in updated_data:
-                data.update({"user" : verified_user.pk})
+            updated_data = request.data
+            updated_data.update({"user" : verified_user.pk})
 
-            serialiser = UserLanguageSerialser(data = updated_data, many=True)
+            serialiser = UserLanguageSerialser(data = updated_data, many=False)
             if (serialiser.is_valid()):
                 serialiser.save()
 
@@ -2982,7 +3063,8 @@ class UserLanguageView(APIView):
                 if (serialiser.is_valid()):
                     pass
                 else:
-                    logger.error(f'Error in UserBasicView_ from POST method : {str(serialiser.errors)}')
+                    logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {serialiser.errors}')
+
                 return Response(
                     {
                         "status" : "error" , 
@@ -2994,18 +3076,19 @@ class UserLanguageView(APIView):
                     },status=status.HTTP_400_BAD_REQUEST)
             
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def put(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
         try:
-            if(request.data.get("id") in None):
+            if(request.data.get("id") is None):
                 raise ValueError("id field cannt be null")
             verified_user = authenticator(request)
             if(verified_user is False):
@@ -3026,7 +3109,7 @@ class UserLanguageView(APIView):
                 if (serialiser.is_valid()):
                     pass
                 else:
-                    logger.error(f'Error in UserBasicView_ from POST method : {str(serialiser.errors)}')
+                    logger.error(f'Error in {self.__class__.__name__} using {self.request.method} method : {str(serialiser.errors)}')
                 return Response(
                     {
                         "status" : "error" , 
@@ -3038,18 +3121,19 @@ class UserLanguageView(APIView):
                     },status=status.HTTP_400_BAD_REQUEST)
             
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def delete(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
         try:
-            if(request.query_params.get("id") in None):
+            if(request.query_params.get("id") is None):
                 raise ValueError("id field cannt be null")
             get_object_or_404(UserLanguageModel, pk = request.query_params.get("id")).delete()
             return Response({
@@ -3059,13 +3143,147 @@ class UserLanguageView(APIView):
             }, status=status.HTTP_200_OK)
             
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
+
+class UserCertificateView(APIView):
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [OnlyUserPermission()]
+            # return [CustomPermission(request=self.request, codename="add_userprojectmodel")]
+        if self.request.method == "PUT":
+            return [OnlyUserPermission()]
+            # return [CustomPermission(request=self.request, codename="change_userprojectmodel")]
+        if self.request.method == "DELETE":
+            return [OnlyUserPermission()]
+            # return [CustomPermission(request=self.request, codename="delete_userprojectmodel")]
+        return [CustomIsAdmin()]
+    
+    def post(self,request):
+        logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
+        try:
+            required_fields = ["certificate_id", "name", "organization", "certified_date", "exp_date", "certificate_link", "cetificate_doc"]
+            for field in required_fields:
+                if field not in request.data:
+                    raise ValueError(f"{field} field cannt be null")
+                
+
+            verified_user = authenticator(request)
+            if(verified_user is False):
+                raise Exception("Authentication credentails were not provided")
+            
+            updated_data = request.data.copy()
+            updated_data.update({"user" : verified_user.pk})
+
+            serialiser = UserCertificateSerialiser(data = updated_data)
+            if (serialiser.is_valid()):
+                serialiser.save()
+
+                return Response({
+                    "status" : "success", 
+                    "code" : "200",
+                    "message" : "OK"
+                }, status=status.HTTP_200_OK)
+            else:
+                if (serialiser.is_valid()):
+                    pass
+                else:
+                    logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(serialiser.errors)}')
+                return Response(
+                    {
+                        "status" : "error" , 
+                        "code" : "400", 
+                        "message" : "Invalid Data",
+                        "data" : { 
+                            "errors" : serialiser_errors([serialiser])
+                            }
+                    },status=status.HTTP_400_BAD_REQUEST)
+            
+        except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
+            logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
+            return Response(
+                {
+                "status" : "error" , 
+                "code" : "406", 
+                "message" : str(e), 
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
+    
+    def put(self,request):
+        logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
+        try:
+            required_fields = ["id", "certificate_id", "name", "organization", "certified_date", "exp_date", "certificate_link", "cetificate_doc"]
+            for field in required_fields:
+                if field not in request.data:
+                    raise ValueError(f"{field} field cannt be null")
+                
+            verified_user = authenticator(request)
+            if(verified_user is False):
+                raise Exception("Authentication credentails were not provided")
+            the_data = get_object_or_404(UserCertificateModel, pk = request.data.get("id"))
+            updated_data = request.data.copy()
+            updated_data.update({"user" : verified_user.pk})
+            serialiser = UserCertificateSerialiser(the_data, data = updated_data)
+            if (serialiser.is_valid()):
+                serialiser.save()
+
+                return Response({
+                    "status" : "success", 
+                    "code" : "200",
+                    "message" : "OK"
+                }, status=status.HTTP_200_OK)
+            else:
+                if (serialiser.is_valid()):
+                    pass
+                else:
+                    logger.error(f'Error in {self.__class__.__name__} using {self.request.method} method : {str(serialiser.errors)}')
+                return Response(
+                    {
+                        "status" : "error" , 
+                        "code" : "400", 
+                        "message" : "Invalid Data",
+                        "data" : { 
+                            "errors" : serialiser_errors([serialiser])
+                            }
+                    },status=status.HTTP_400_BAD_REQUEST)
+            
+        except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
+            logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
+            return Response(
+                {
+                "status" : "error" , 
+                "code" : "406", 
+                "message" : str(e), 
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
+    
+    def delete(self,request):
+        logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
+        try:
+            if(request.query_params.get("id") is None):
+                raise ValueError("id field cannt be null")
+            get_object_or_404(UserCertificateModel, pk = request.query_params.get("id")).delete()
+            return Response({
+                "status" : "success", 
+                "code" : "200",
+                "message" : "OK"
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
+            logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
+            return Response(
+                {
+                "status" : "error" , 
+                "code" : "406", 
+                "message" : str(e), 
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
 #========================================================== Recruiter-Company ==========================================================
 
@@ -3126,13 +3344,14 @@ class CompanyDetailsView(APIView):
                     },status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
 class RecruiterActions(APIView):
     def get_permissions(self):
@@ -3219,7 +3438,7 @@ class RecruiterActions(APIView):
                     "required_skills" : job.jobrequriedskillsmodel_set.values_list("skill", "skill__skill"),
                     "job_tags" : job.jobtagsmodel_set.values_list("tag", "tag__name"),
                     # "number_of_applicants" : len(job.jobapplicationmodel_set.values()),
-                    "applicants" : job.jobapplicationmodel_set.values(),
+                    "applicants" : job.jobapplicationmodel_set.values(), # type: ignore
                     "start_salary" : job.start_salary if job.show_salary is True else '',
                     "end_salary" : job.end_salary if job.show_salary is True else '',
                 })
@@ -3242,13 +3461,14 @@ class RecruiterActions(APIView):
                 "data" : {"jobs" : job_data, "recent_applications" : result, "plan_details" : plan_data }
             }, status=status.HTTP_200_OK)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
         
     def post(self,request):
         pass
@@ -3275,6 +3495,8 @@ class JobsView(APIView):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
         try:
             all_jobs = JobsModel.objects.all()
+            related_jobs = []
+
 
             # if(request.query_params.get("dashboard") == "true"):
             #     complete_set = {
@@ -3294,9 +3516,6 @@ class JobsView(APIView):
                 all_sponsors = PlanPurchasedModel.objects.filter(plan_period__amount__gt = 1).values_list("user",flat=True)
                 all_jobs = all_jobs.filter(company__user__in = all_sponsors)
             
-            if request.query_params.get("id") is not None:
-                all_jobs = all_jobs.filter(pk = request.query_params.get("id"))
-
             if request.query_params.get("recent") == 'true':
                 all_jobs = all_jobs.order_by('-created_at')
             
@@ -3310,6 +3529,53 @@ class JobsView(APIView):
             
             if request.query_params.get("city") is not None:
                 all_jobs = all_jobs.filter(city = request.query_params.get("city"))
+
+            if request.query_params.get("id") is not None:
+                id_related_jobs = all_jobs.exclude(pk = request.query_params.get("id"))
+                all_jobs = all_jobs.filter(pk = request.query_params.get("id"))
+                if(all_jobs.exists()):
+                    id_related_jobs = id_related_jobs.filter(designation = all_jobs.first().designation)
+                    
+
+                    for job in id_related_jobs:
+                        auth = False
+                        verified_user = authenticator(request)
+                        saved = False
+                        if(verified_user):
+                            auth = job.jobapplicationmodel_set.filter(user = verified_user.pk).exists()
+                            saved = job.favoritesmodel_set.filter(user = verified_user.pk).exists()
+                        the_job = model_to_dict(job)
+                        the_job.update({
+                            "company" : {
+                                "id" : job.company.pk,
+                                "name" : job.company.organization_name,
+                                "email" : job.company.organization_email,
+                                "mobile" : job.company.organization_mobile,
+                                "alternate_mobile" : job.company.alternate_mobile,
+                                "address" : job.company.organization_address,
+                                "logo" : job.company.organization_logo.name,
+                                "website" : job.company.organization_website,
+                                "industry" : job.company.industry.industry,
+                                "description" : job.company.organization_description
+                            },
+                            "industry" : {"id" : job.industry.pk, "industry" : job.industry.industry, "industry_image" : job.industry.image.name},
+                            "city" : {"id" : job.city.pk, "city" : job.city.city},
+                            "designation" : {"id" : job.designation.pk, "designation" : job.designation.designation},
+                            "posted_at" : job.created_at,
+                            "required_skills" : map(lambda x : {"id" : x[0], "name" : x[1]},job.jobrequriedskillsmodel_set.values_list("skill", "skill__skill")),
+                            "job_tags" : map(lambda x : {"id" : x[0], "name" : x[1]},job.jobtagsmodel_set.values_list("tag", "tag__name")),
+                            "number_of_applicants" : len(job.jobapplicationmodel_set.values()),
+                            "start_salary" : job.start_salary if job.show_salary is True else '',
+                            "end_salary" : job.end_salary if job.show_salary is True else '',
+                            "applied" : int(auth),
+                            "saved" : int(saved)
+                        })
+                        related_jobs.append(the_job)
+          
+
+
+                else:
+                    raise Exception("Requested ID is not available")
             
             data = []
             for job in all_jobs:
@@ -3347,20 +3613,25 @@ class JobsView(APIView):
                 })
                 data.append(the_job)
                  
-            return Response({
+            the_response =  Response({
                 "status" : "success",
                 "code" : "200",
                 "message" : "OK",
-                "data" : data
+                "data" : data,
             }, status=status.HTTP_200_OK)
+            if(request.query_params.get("id") is not None):
+                the_response.data.update({"related_jobs" : related_jobs})
+            return the_response
+        
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def post(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
@@ -3435,13 +3706,14 @@ class JobsView(APIView):
 
             
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def put(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
@@ -3517,13 +3789,14 @@ class JobsView(APIView):
 
             
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
 class JobApplicationView(APIView):
 
@@ -3546,7 +3819,7 @@ class JobApplicationView(APIView):
             elif(verified_user.parent_user is not None):
                 all_applications = all_applications.filter(job__user = verified_user.pk)
             elif(verified_user.is_staff is False):
-                all_applications.filter(user = verified_user.pk)
+                all_applications = all_applications.filter(user = verified_user.pk)
             
             if(request.query_params.get("id") is not None):
                 all_applications = all_applications.filter(pk = request.query_params.get("id"))
@@ -3602,13 +3875,14 @@ class JobApplicationView(APIView):
                 "data" : result
             }, status=status.HTTP_200_OK)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def post(self,request):
         try:
@@ -3640,13 +3914,14 @@ class JobApplicationView(APIView):
                 "message" : "CREATED",
             }, status=status.HTTP_201_CREATED)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def put(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
@@ -3664,13 +3939,14 @@ class JobApplicationView(APIView):
                 "message" : "OK",
             }, status=status.HTTP_200_OK)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def delete(self,request):
         pass
@@ -3723,13 +3999,14 @@ class FavoritesView(APIView):
                 "data" : data
             }, status=status.HTTP_200_OK)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
     
     def post(self,request):
         logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
@@ -3754,10 +4031,347 @@ class FavoritesView(APIView):
                 "message" : "OK",
             }, status=status.HTTP_200_OK)
         except Exception as e:
+            LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
             logger.error(f'Error in {self.__class__.__name__} from {self.request.method} method : {str(e)}')
             return Response(
                 {
                 "status" : "error" , 
-                "code" : "500", 
+                "code" : "406", 
                 "message" : str(e), 
-                },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Secifically Mobile +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+@api_view(["POST"])
+@permission_classes([OnlyUserPermission])
+def MobileEditAcc(request):
+    logger.info(f'Reqest for MobileEditAcc_ using POST method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
+    try:
+        required_fields = ["preferred_city","preferred_shift","preferred_salary","preferred_role"]
+        for field in required_fields:
+            if request.data.get(field) is None:
+                raise Exception(f"{field} field cannot be null")
+        
+        verified_user = authenticator(request)
+        if(verified_user is False):
+            raise Exception("Authentication credentials were not provided")
+        
+        the_detail_model = verified_user.userdetailsmodel_set
+        if(the_detail_model.exists() is False):
+            the_detail_model.create(user = verified_user, preferred_city = get_object_or_404(CitiesModel,pk = request.data.get("preferred_city")), preferred_job_shift = request.data.get("preferred_shift"), expected_salary = request.data.get("preferred_salary"), designation = get_object_or_404(DesignationModel, pk= request.data.get("preferred_role"))) 
+        else:
+            the_detail_model = the_detail_model.first()
+            the_detail_model.preferred_city = get_object_or_404(CitiesModel,pk = request.data.get("preferred_city"))
+            the_detail_model.preferred_job_shift = request.data.get("preferred_shift")
+            the_detail_model.expected_salary = request.data.get("preferred_salary")
+            the_detail_model.designation = get_object_or_404(DesignationModel, pk= request.data.get("preferred_role"))
+            the_detail_model.save()
+
+        return Response({
+            "status" : "success",
+            "code" : "200",
+            "message" : "OK",
+            "data" : request.data
+        }, status=status.HTTP_200_OK)
+            
+    except Exception as e:
+        LogsModel.objects.create(api = "MobileEditAcc",method = "POST", error = str(e) )
+        logger.error(f'Error in MobileEditAcc_ from POST method : {str(e)}')
+        return Response({
+            "status" : "error" , 
+            "code" : "406", 
+            "message" : str(e), 
+        },status=status.HTTP_406_NOT_ACCEPTABLE)
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Secifically Mobile +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+class ChatterBox(APIView):
+    def get_permissions(self):
+        return [CustomIsAuthenticated()]
+    
+    def get(self,request):
+        logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
+        try:
+            application_id = request.query_params.get("id")
+            if(application_id is None):
+                raise Exception("id field cannot be null")
+            verified_user = authenticator(request)
+            if(verified_user is False):
+                raise Exception("Authentication credentials were not provided")
+            application = get_object_or_404(JobApplicationModel, pk = application_id)
+                        
+            if(application.user != verified_user and application.job.user != verified_user and application.job.user.parent_user != verified_user):
+                raise Exception("You are not authorized to view this application")
+            
+            the_chats = db.reference(f"chats/application_{application_id}")
+            if(the_chats.get() is None):
+                response = Response({
+                    "status" : "error",
+                    "code" : "404",
+                    "message" : "No chats found for this application"
+                },status=status.HTTP_404_NOT_FOUND)
+            else:
+                response = Response({
+                    "status" : "success",
+                    "code" : "200",
+                    "message" : "OK",
+                    "data" : the_chats.get(),
+                },status=status.HTTP_200_OK)
+            
+            return response
+            
+        except Exception as e:
+            logger.error(f'Error in {self.__class__.__name__} from GET method : {str(e)}')
+            return Response({
+                "status" : "error" ,
+                "code" : "406",
+                "message" : str(e),
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
+        
+    def post(self,request):
+        logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
+        try:
+            required_fields = ["id", "message", "datetime"]
+            for field in required_fields:
+                if(field not in request.data):
+                    raise Exception(f"{field} field is required")
+            
+            message = request.data.get("message")
+            verified_user = authenticator(request)
+            if(verified_user is False):
+                raise Exception("Authentication credentials were not provided")
+            application = get_object_or_404(JobApplicationModel, pk = request.data.get("id"))
+            if(application.user != verified_user and application.job.user != verified_user and application.job.user.parent_user != verified_user):
+                raise Exception("You are not authorized to chat with this application")
+            
+            is_user = False
+            if(application.user == verified_user):
+                is_user = True
+            
+            the_chat = db.reference(f"chats/application_{application.pk}")
+            if(the_chat.get() is None):
+                chatter.update({
+                    f"application_{application.pk}" : {
+                        f"msg_0{1}":{
+                            "is_user" : is_user,
+                            "message" : message,
+                            "time" : request.data.get("datetime")
+                        }
+                    }
+                })
+            else:
+                the_chat.update({
+                    f"msg_{len(the_chat.get())+1 if len(the_chat.get())+1 > 9 else f'0{len(the_chat.get())+1}'}":{
+                        "is_user" : is_user,
+                        "message" : message,
+                        "time" : request.data.get("datetime")
+                    }
+                })
+
+            
+            return Response({
+                "status" : "success",
+                "code" : "200",
+                "message" : "OK",
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f'Error in {self.__class__.__name__} from GET method : {str(e)}')
+            return Response({
+                "status" : "error" ,
+                "code" : "406",
+                "message" : str(e),
+            },status=status.HTTP_406_NOT_ACCEPTABLE)
+                
+
+class NotificationsView(APIView):
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [OnlyCompanyPermission()]
+        if (self.request.method == "PUT") or (self.request.method == "GET"):
+            return [OnlyUserPermission()]
+        return [CustomIsAuthenticated()]
+    
+    def get(self, request):
+        logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
+        try:
+            verified_user = authenticator(request)
+            all_notifications = NotificationsModel.objects.filter(user = verified_user.pk)
+            
+            if(request.query_params.get("notification_id") is not None):
+                notification = all_notifications.filter(pk = request.query_params.get("notification_id"))
+                if(notification.first() is None):
+                    raise Exception(f"Requested Id does not exists")
+                notification_val = notification.first()
+                notification_val.status= True
+                notification_val.save()
+                return Response({
+                    "status" : "success",
+                    "code" : "200",
+                    "message" : "OKs",
+                    "data" : notification.values()[0]
+                }, status=status.HTTP_200_OK)
+            
+            return Response({
+                "status" : "success",
+                "code" : "200",
+                "message" : "OK",
+                "data" : list(all_notifications.values())
+                }, status=status.HTTP_200_OK)
+        
+        except Exception as e:
+            logger.error(f'Error in {self.__class__.__name__} from GET method : {str(e)}')
+            return Response({
+                "status" : "error" ,
+                "code" : "406",
+                "message" : str(e),
+                },status=status.HTTP_406_NOT_ACCEPTABLE)
+        
+    def post(self, request):
+        logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
+        try:
+            required_fields = ["application_id", "message","description"]
+            for field in required_fields:
+                if field not in request.data:
+                    raise Exception(f"{field} field cannot be null")
+            verified_user = authenticator(request)
+            application = get_object_or_404(JobApplicationModel, pk = request.data["application_id"])
+            if (application.job.user != verified_user) and (application.job.user.parent_user != verified_user):
+                raise Exception("You are not authorized to post notification for this application")
+            notification = NotificationsModel.objects.create(user = application.user, message = request.data["message"], description = request.data.get("description"))
+            return Response({
+                "status" : "success",
+                "code" : "200",
+                "message" : "OK",
+                "data" : {"notification_id" : notification.pk}
+                }, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f'Error in {self.__class__.__name__} from POST method : {str(e)}')
+            return Response({
+                "status" : "error" ,
+                "code" : "406",
+                "message" : str(e),
+            },status=status.HTTP_406_NOT_ACCEPTABLE)
+        
+            
+class UserSkillsView(APIView):
+    def get_permissions(self):
+        if(self.request.method not in SAFE_METHODS):
+            return [OnlyUserPermission()]
+        return [CustomIsAuthenticated()]
+    
+    def post(self,request):
+        logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
+        try:
+            if(request.data["skill_id"] is None):
+                raise Exception("Skill id cannot be null")
+            verified_user = authenticator(request)
+            UserSkillModel.objects.create(user = verified_user, skill = get_object_or_404(SkillsModel, pk = request.data["skill_id"]))
+            return Response({
+                "status" : "success",
+                "code" : "200",
+                "message" : "OK",
+                }, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f'Error in {self.__class__.__name__} from POST method : {str(e)}')
+            return Response({
+                "status" : "error" ,
+                "code" : "406",
+                "message" : str(e),
+            },status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    def delete(self,request):
+        logger.info(f'Reqest for {self.__class__.__name__} using {self.request.method} method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
+        try:
+            if(request.query_params.get("skill_id") is None):
+                raise Exception("skill_id cannot be null")
+            verified_user = authenticator(request)
+            the_model = get_object_or_404(UserSkillModel, user = verified_user, skill = get_object_or_404(SkillsModel, pk = request.query_params.get("skill_id")))
+            the_model.delete()
+            return Response({
+                "status" : "success",
+                "code" : "200",
+                "message" : "OK",
+                }, status=status.HTTP_200_OK)
+        
+        except Exception as e:
+            logger.error(f'Error in {self.__class__.__name__} from POST method : {str(e)}')
+            return Response({
+                "status" : "error" ,
+                "code" : "406",
+                "message" : str(e),
+            },status=status.HTTP_406_NOT_ACCEPTABLE)
+
+@api_view(["POST"])
+def JobFilterView(request):
+    logger.info(f'Reqest for JobFilter_ using POST method : qp={str(request.query_params)}, data={str(request.data)}, head={str(request.headers)}')
+    try:
+        all_jobs = JobsModel.objects.all()
+
+        if(request.data["designation_id"] is not None and request.data["designation_id"] != ''):
+            all_jobs = all_jobs.filter(designation = request.data["designation_id"])
+        
+        if(request.data["location"] is not None and request.data["location"] != ''):
+            all_jobs = all_jobs.filter(city = request.data["location"])
+        
+        if(request.data["salary"] is not None and request.data["salary"] != ''):
+            all_jobs = all_jobs.filter(end_salary__gte = request.data["salary"])
+
+        if(request.data["job_type"] is not None and request.data["job_type"] != ''):
+            all_jobs = all_jobs.filter(jobtagsmodel__tag = request.data["job_type"])
+
+        if(request.data["experience"] is not None and request.data["experience"] != ''):
+            all_jobs = all_jobs.filter(experience_to__gte = request.data["experience"])
+
+        if(request.data["skills"] is not None and request.data["skills"] != ''):
+            all_jobs = all_jobs.filter(jobrequriedskillsmodel__skill = request.data["skills"])
+
+        data = []
+        for job in all_jobs:
+            auth = False
+            verified_user = authenticator(request)
+            saved = False
+            if(verified_user):
+                auth = job.jobapplicationmodel_set.filter(user = verified_user.pk).exists()
+                saved = job.favoritesmodel_set.filter(user = verified_user.pk).exists()
+            the_job = model_to_dict(job)
+            the_job.update({
+                "company" : {
+                    "id" : job.company.pk,
+                    "name" : job.company.organization_name,
+                    "email" : job.company.organization_email,
+                    "mobile" : job.company.organization_mobile,
+                    "alternate_mobile" : job.company.alternate_mobile,
+                    "address" : job.company.organization_address,
+                    "logo" : job.company.organization_logo.name,
+                    "website" : job.company.organization_website,
+                    "industry" : job.company.industry.industry,
+                    "description" : job.company.organization_description
+                },
+                "industry" : {"id" : job.industry.pk, "industry" : job.industry.industry, "industry_image" : job.industry.image.name},
+                "city" : {"id" : job.city.pk, "city" : job.city.city},
+                "designation" : {"id" : job.designation.pk, "designation" : job.designation.designation},
+                "posted_at" : job.created_at,
+                "required_skills" : map(lambda x : {"id" : x[0], "name" : x[1]},job.jobrequriedskillsmodel_set.values_list("skill", "skill__skill")),
+                "job_tags" : map(lambda x : {"id" : x[0], "name" : x[1]},job.jobtagsmodel_set.values_list("tag", "tag__name")),
+                "number_of_applicants" : len(job.jobapplicationmodel_set.values()),
+                "start_salary" : job.start_salary if job.show_salary is True else '',
+                "end_salary" : job.end_salary if job.show_salary is True else '',
+                "applied" : int(auth),
+                "saved" : int(saved)
+            })
+            if(the_job not in data):
+                data.append(the_job)
+                 
+            return Response({
+                "status" : "success",
+                "code" : "200",
+                "message" : "OK",
+                "data" : data,
+            }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        LogsModel.objects.create(api = "JobFilter",method = "POST", error = str(e) )
+        logger.error(f'Error in JobFilter_ from POST method : {str(e)}')
+        return Response({
+            "status" : "error" ,
+            "code" : "406",
+            "message" : str(e),
+        },status=status.HTTP_406_NOT_ACCEPTABLE)

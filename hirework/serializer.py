@@ -46,6 +46,11 @@ class UserLanguageSerialser(serializers.ModelSerializer):
         model = UserLanguageModel
         fields = ["user", "language", "read", "write", "speak", "proficiency"]
 
+class UserCertificateSerialiser(serializers.ModelSerializer):
+    class Meta:
+        model = UserCertificateModel
+        fields = ["user", "certificate_id", "name", "organization", "certified_date", "exp_date", "certificate_link", "cetificate_doc"]
+
 #========================================================== Recruiter - Company ==========================================================
 
 class CompanyPostSerializer(serializers.ModelSerializer):
@@ -58,4 +63,4 @@ class CompanyPostSerializer(serializers.ModelSerializer):
 class JobPostSerialiser(serializers.ModelSerializer):
     class Meta:
         model = JobsModel
-        fields = ["user", "company", "name", "description", "city", "designation", "industry", "hired_by", "annual_salary_type", "start_salary", "end_salary", "number_of_openings", "experience_from", "experience_to", "show_salary", "address", "pincode", "landmark", "work_week_start", "work_week_end", "work_week_hours", ]
+        fields = ["user", "company", "name", "description", "city", "designation", "industry", "hired_by", "annual_salary_type", "start_salary", "end_salary", "number_of_openings", "experience_from", "experience_to", "show_salary", "address", "pincode", "landmark", "work_week_start", "work_week_end", "work_week_hours", "job_shift"]

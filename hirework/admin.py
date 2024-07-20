@@ -40,3 +40,6 @@ admin.site.register(UserModel)
 admin.site.register(CompanyBenifitsModel)
 admin.site.register(CompanySuplimentsModel)
 admin.site.register(UserTokenModel)
+admin.site.register(NotificationsModel)
+admin.site.register(LogsModel)
+

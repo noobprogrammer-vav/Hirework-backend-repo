@@ -1,0 +1,4 @@
+git add .
+git commit -m "--second--"
+git push -u orgin "--name--"
+git pull orgin master

@@ -146,6 +146,14 @@ class UserDetailsModel(models.Model):
         ('widowed', 'Widowed'),
         ('others', 'Others'),
     ]
+
+    SHIFT_TYPES = [
+        ('day', 'Day Shift'),
+        ('night', 'Night Shift'),
+        ('evening', 'Evening Shift'),
+        ('rotating', 'Rotating Shift'),
+        ('weekend', 'Weekend Shift'),
+    ]
         
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     designation = models.ForeignKey(DesignationModel,on_delete=models.CASCADE, null=True, blank=True)
@@ -153,6 +161,7 @@ class UserDetailsModel(models.Model):
     dob = models.DateField(null=True, blank=True)
     current_city = models.ForeignKey(CitiesModel,on_delete=models.CASCADE, related_name="living", null=True, blank=True)
     preferred_city = models.ForeignKey(CitiesModel,on_delete=models.CASCADE, null=True, blank=True)
+    preferred_job_shift = models.CharField(choices=SHIFT_TYPES, max_length=20, default='day')
     current_address = models.TextField(null=True, blank=True) 
     permanent_address = models.TextField(null=True, blank=True)
     industry = models.ForeignKey(IndustriesModel,on_delete=models.CASCADE, null=True, blank=True)
@@ -437,6 +446,14 @@ class JobsModel(models.Model):
         ('sat', 'Saturday'),
     ]
 
+    SHIFT_TYPES = [
+        ('day', 'Day Shift'),
+        ('night', 'Night Shift'),
+        ('evening', 'Evening Shift'),
+        ('rotating', 'Rotating Shift'),
+        ('weekend', 'Weekend Shift'),
+    ]
+
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     company = models.ForeignKey(CompanyDetailsModel, on_delete=models.CASCADE)
     name = models.CharField(max_length=100,unique=True)
@@ -446,8 +463,9 @@ class JobsModel(models.Model):
     industry = models.ForeignKey(IndustriesModel,on_delete=models.CASCADE)
     hired_by = models.IntegerField(default=0)   #in days
     annual_salary_type = models.CharField(max_length=50, choices=SALARY_TYPE_CHOICES, default="exact")
-    start_salary = models.FloatField()
-    end_salary = models.FloatField(null=True, blank=True)
+    start_salary = models.FloatField(null=True, blank=True)
+    end_salary = models.FloatField()
+    job_shift = models.CharField(choices=SHIFT_TYPES, max_length=20, default='day')
     number_of_openings = models.IntegerField(default=0)
     experience_from = models.IntegerField(default=0)
     experience_to = models.IntegerField(default=0)
@@ -537,7 +555,7 @@ class JobApplicationModel(models.Model):
         unique_together = ("user", "job")
 
     def __str__(self) -> str:
-        return self.user.name
+        return f"{self.user.name} => {self.job.name} => {self.job.company.organization_name}"
 
 class AnswersModel(models.Model):
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
@@ -570,3 +588,22 @@ class FavoritesModel(models.Model):
         return self.user.name
 
     
+class NotificationsModel(models.Model):
+    user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
+    message = models.TextField()
+    description = models.TextField(default='')
+    status = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"{self.user.name} => {self.message}"
+
+
+class LogsModel(models.Model):
+    api = models.CharField(max_length=150)
+    method = models.CharField(max_length=100)
+    error = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"{self.api} => {self.method}"

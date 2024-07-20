@@ -20,6 +20,8 @@ urlpatterns = [
     path("useremployment/", UserEmploymentView.as_view()),
     path("userproject/", UserProjectView.as_view()),
     path("userlanguage/", UserLanguageView.as_view()),
+    path("usercertificate/", UserCertificateView.as_view()),
+
 
     path("states/", StatesView.as_view()),
     path("cities/", CityView.as_view()),
@@ -35,9 +37,12 @@ urlpatterns = [
 
 
     path("jobs/", JobsView.as_view()),
+    path("jobsfilter/", JobFilterView),
     path("apply_job/", JobApplicationView.as_view()),
-    path("favorites/",FavoritesView.as_view()),
-
+    path("chat/",ChatterBox.as_view()),
+    path("favourites/",FavoritesView.as_view()),
+    path("notifications/", NotificationsView.as_view()),
+    path("userskills/",UserSkillsView.as_view()),
 
     path("recruiter/",RecruiterActions.as_view()),
 
