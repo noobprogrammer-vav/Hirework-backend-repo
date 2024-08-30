@@ -4020,15 +4020,17 @@ class FavoritesView(APIView):
                 raise Exception("Authentication credentials were not provided")
             
             favs = FavoritesModel.objects.filter(user = verified_user.pk, job = request.data.get("job_id"))
+            is_created = True
             if(favs.exists()):
                 favs.first().delete()
+                is_created = False
             else:
                 FavoritesModel.objects.create(user = verified_user, job = get_object_or_404(JobsModel,pk = request.data.get("job_id")))
 
             return Response({
                 "status" : "success",
                 "code" : "200",
-                "message" : "OK",
+                "message" : f"Job {'saved' if is_created else 'unsaved'} successfully",
             }, status=status.HTTP_200_OK)
         except Exception as e:
             LogsModel.objects.create(api = self.__class__.__name__,method = self.request.method, error = str(e) )
